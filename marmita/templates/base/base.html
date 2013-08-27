@@ -6,15 +6,23 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="shortcut icon" href="{{ STATIC_URL }}assets/bootstrap-3.0.0/assets/ico/favicon.png">
-
-    <title>Marmitinha CoNéctar</title>
+    <script src="{{ STATIC_URL }}assets/bootstrap-3.0.0/assets/js/jquery.js"></script>
+    <script src="http://leaverou.github.com/prefixfree/prefixfree.min.js"></script>
+    <title>Marmitinha Tracy</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="{{ STATIC_URL }}assets/bootstrap-3.0.0/dist/css/bootstrap.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}assets/bootstrap-3.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href='http://fonts.googleapis.com/css?family=Candal' rel='stylesheet' type='text/css'>
+    <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet">
     <!-- Custom styles for this template -->
-    <link href="jumbotron.css" rel="stylesheet">
-
+    <link href="{{ STATIC_URL }}assets/bootstrap-3.0.0/examples/jumbotron/jumbotron.css" rel="stylesheet">
+    <script src="{{ STATIC_URL }}assets/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <link href="{{ STATIC_URL }}assets/jquery-ui-1.10.3.custom/css/overcast/jquery-ui-1.10.3.custom.min.css" rel="stylesheet">
+    <script type="text/javascript">
+        $(function() {
+            $("#datepicker").datepicker();
+        });
+    </script>
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="../../assets/js/html5shiv.js"></script>
@@ -52,15 +60,27 @@
               </ul>
             </li>
           </ul>
-          <form class="navbar-form navbar-right">
-            <div class="form-group">
-              <input type="text" placeholder="Email" class="form-control">
-            </div>
-            <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-success">Sign in</button>
-          </form>
+          {% block login %}
+          <form class="navbar-form navbar-right" method="POST" action="{% if user.is_authenticated %}{% url 'logout' %}{% else %}{% url 'login' %}{% endif %}">
+            <input type="hidden" name = "next" value = "{% url 'home' %}" />
+            {% csrf_token %}
+            {% if user.is_authenticated %}
+              <p style="color:#909090">Bem vindo, {{ user.username }}.</p>
+              <input type="submit" class="btn btn-success" value="Log out" />
+            {% else %}
+            {% if form.errors %}
+              <p class="text-warning">Your username and password didn't match. Please try again.</p>
+            {% endif %}
+                <div class="form-group">
+                  <input id="id_username" name="username" type="text" placeholder="Login" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <input id="id_password" name="password" type="password" placeholder="Password" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-success">Sign In</button>
+            {% endif %}
+            </form>
+          {% endblock %}
         </div><!--/.navbar-collapse -->
       </div>
     </div>
@@ -69,16 +89,18 @@
     <div class="jumbotron">
       <div class="container">
         <br>
-        <div class="container">                                                     
-          <div class="row">                                                         
-            <div class="col-lg-1"> 
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-1">
               <img src="{{ STATIC_URL }}img/logo_novo3.jpg" height="124" width="106">
             </div>
-            <div class="col-lg-8"> 
-              <h1 style="color:#46440D">Marmitinha Tracy</h1>  
+            <div class="col-lg-11">
+            <div class="titulo">
+              <h1>Marmitinha Tracy</h1>
+            </div>
             </div>
           </div>
-        </div>  
+        </div>
         <p>A Marmitinha Tracy é um serviço de almoço diário disponibilizado pela Tracy Web Technologies, não só para os funcionários da própria empresa, como para todos aqueles dentro do Ambiente CoNéctar que solicitarem tal serviço, no entanto, existe uma obrigação, lavar a marmita térmica, e aqui informamos, de maneira justa, de quem é a vez.</p>
         <p><a class="btn btn-primary btn-lg">Sobre &raquo;</a></p>
       </div>
@@ -93,22 +115,30 @@
             <a href="#" class="list-group-item active">
               Ranking
             </a>
-            <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
-            <a href="#" class="list-group-item">Morbi leo risus</a>
-            <a href="#" class="list-group-item">Porta ac consectetur ac</a>
-            <a href="#" class="list-group-item">Vestibulum at eros</a>
-          </div>  
+            {% for person in people %}
+              <a href="#" class="list-group-item">{{ person.name }} {{ person.get_average }}</a>
+            {% endfor %}
+          </div>
           <!--<p>Como saber se a sua vez de lavar está chegando? Veja o Ranking! Para entender o funcionamento do Ranking, clique em "Ver detalhes"</p>  -->
           <p><a class="btn btn-default" href="#">Entenda o Ranking &raquo;</a></p>
         </div>
         <div class="col-lg-4">
           <h2>De quem é a vez de lavar?</h2>
-          <p><a class="btn btn-default" href="#">Veja &raquo;</a></p>
+          <div class="button-wrapper">
+          <a href="#" class="a-btn" style="text-decoration:none">
+            <span class="a-btn-text">Veja</span>
+            {% if min %}
+                <span class="a-btn-slide-text">{{ min.name }}</span>
+            {% endif %}
+            <span class="a-btn-icon-right"><span></span></span>
+          </a>
+          </div>
        </div>
         <div class="col-lg-4">
-          <h2>Heading</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-          <p><a class="btn btn-default" href="#">View details &raquo;</a></p>
+         <h2>Área do admin</h2>
+         <div>
+           <input type="text" id="datepicker" placeholder="Data" class="form-control" style="z-index:10" />
+         </div>
         </div>
       </div>
 
@@ -123,8 +153,7 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="../../assets/js/jquery.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}assets/bootstrap-3.0.0/dist/js/bootstrap.min.js"></script>
   </body>
 </html>
 
