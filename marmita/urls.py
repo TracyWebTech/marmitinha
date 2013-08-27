@@ -5,9 +5,11 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'marmita.views.home', name='home'),
+    url(r'^$', 'marmita.views.index', name='home'),
     # url(r'^marmita/', include('marmita.foo.urls')),
-
+    url(r'^users/login/$', 'django.contrib.auth.views.login',
+        {'template_name': 'base/base.html'}, name='login'),
+    url(r'^users/', include('django.contrib.auth.urls')),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
