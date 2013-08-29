@@ -18,10 +18,20 @@ def index(request):
         m = Meal.objects.get(date=today)
     except Meal.DoesNotExist:
         m = Meal.objects.create(date=today)
+
+    new_member = Person.objects.filter(is_new=True)
+    if new_member:
+        if new_member.count() > 1:
+            person_lower_average = random.choice(list(new_member))
+        else:
+            person_lower_average = new_member[0]
+
     ranking = list(Person.objects.all())
     ranking.sort(key=lambda x: x.get_average(), reverse=True)
+
     try:
-        person_lower_average = ranking[-1]
+        if not person_lower_average:
+            person_lower_average = ranking[-1]
     except IndexError:
         return render(request, 'index.html', {
             'people': [],
@@ -30,8 +40,9 @@ def index(request):
         })
     people_copy = list(ranking)
     people_copy.pop()
-    if not m.ordered and person_lower_average.get_average() \
-            in [p.get_average() for p in people_copy]:
+    if not m.ordered and not person_lower_average.is_new and \
+            person_lower_average.get_average() in [p.get_average() \
+                    for p in people_copy]:
         draw = [person_lower_average,]
         for p in people_copy:
             if p.get_average() == person_lower_average.get_average():

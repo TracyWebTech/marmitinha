@@ -2,6 +2,7 @@ from django.db import models
 
 class Person(models.Model):
     name = models.CharField(max_length=70)
+    is_new = models.BooleanField(default=True)
 
     def count_wash(self):
         #countwash = PersonMeal.objects.filter(wash=True, person=self).count()
@@ -14,7 +15,7 @@ class Person(models.Model):
 
     def get_average(self):
         eat = self.count_eat()
-        if not eat:
+        if not eat or self.is_new:
             return 0.0
         return round(float(self.count_wash())/self.count_eat(), 3)
 

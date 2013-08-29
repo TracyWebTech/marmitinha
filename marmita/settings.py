@@ -129,7 +129,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'people',
     'meals',
-    'django.contrib.admindocs',
 )
 
 # A sample logging configuration. The only tangible logging
