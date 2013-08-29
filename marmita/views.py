@@ -19,6 +19,7 @@ def index(request):
     except Meal.DoesNotExist:
         m = Meal.objects.create(date=today)
 
+    person_lower_average = ''
     new_member = Person.objects.filter(is_new=True)
     if new_member:
         if new_member.count() > 1:
