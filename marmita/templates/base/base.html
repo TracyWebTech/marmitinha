@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="{{ STATIC_URL }}assets/bootstrap-3.0.0/assets/ico/favicon.png">
+    <link rel="shortcut icon" href="{{ STATIC_URL }}img/logo_novo3.jpg">
     <script src="{{ STATIC_URL }}assets/bootstrap-3.0.0/assets/js/jquery.js"></script>
     <script src="http://leaverou.github.com/prefixfree/prefixfree.min.js"></script>
     <title>Marmitinha Tracy</title>
@@ -20,7 +20,7 @@
     <link href="{{ STATIC_URL }}assets/jquery-ui-1.10.3.custom/css/overcast/jquery-ui-1.10.3.custom.min.css" rel="stylesheet">
     <script type="text/javascript">
         $(function() {
-            $("#datepicker").datepicker();
+            $("#datepicker").datepicker({'dateFormat': 'dd/mm/yy'});
         });
     </script>
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -137,8 +137,39 @@
         <div class="col-lg-4">
          <h2>Área do admin</h2>
          <div>
-           <input type="text" id="datepicker" placeholder="Data" class="form-control" style="z-index:10" />
+           <input value="{{ today }}" type="text" id="datepicker" placeholder="Data" class="form-control" style="z-index:10" />
          </div>
+         <div class="panel panel-default">
+          <!-- Default panel contents -->
+          <!-- Table -->
+          <table class="table">
+           <thead>
+            <tr>
+             <th>Nome</th>
+             <th>Comeu</th>
+             <th>Lavou</th>
+            </tr>
+           </thead>
+           <tbody>
+           {% for person in people %} 
+             <tr>
+              <td> {{ person.name }}</td>
+              {% if person.pk in pqc %}                                              
+                <td><div class="check_icon"></div></td>                         
+              {% else %}                                                        
+                <td><div class="uncheck_icon"></div></td>                       
+              {% endif %} 
+              {% if person.wash %}
+                <td><div class="check_icon"></div></td>
+              {% else %}
+                <td><div class="uncheck_icon"></div></td>
+              {% endif %}
+             </tr> 
+           {% endfor %}
+           </tbody>
+          </table>
+         </div>
+
         </div>
       </div>
 

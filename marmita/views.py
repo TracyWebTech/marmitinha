@@ -1,16 +1,19 @@
 import random
 import datetime
+import time
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Max
 from django.shortcuts import render
 
 from people.models import Person
-from meals.models import Meal
+from meals.models import Meal, PersonMeal
 
 
 def index(request):
     today = datetime.date.today()
+    people_filter = PersonMeal.objects.filter(meal__date=today)
+    pqc = [pm.pk for pm in people_filter]
     try:
         m = Meal.objects.get(date=today)
     except Meal.DoesNotExist:
@@ -44,4 +47,6 @@ def index(request):
         'people': ranking,
         'min': m.washer,
         'form': AuthenticationForm,
+        'today': today.strftime("%d/%m/%Y"),
+        'pqc': pqc,
     })
