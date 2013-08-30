@@ -18,4 +18,23 @@ $(function () {
       $('.button-wrapper').find('.a-btn-slide-text').empty().append(data);
     });
   });
+
+  $('.uncheck_icon').click(function() {
+    var $el = $(this);
+    var request = $.ajax({
+      url: $(this).parent().parent().attr('rel'),
+      type: 'POST',
+      data: {
+        'type_of': $(this).attr('rel'),
+        'date': $('#datepicker').val(),
+        'person_pk': $(this).parent().parent().find('.person').attr('rel'),
+      },
+    });
+    request.done(function( data ) {
+      $el.attr('class', 'check_icon');
+      if (data == 'wash') {
+        $el.parents('tr').find('uncheck_icon').attr('class', 'check_icon');  
+      }
+    });
+  });
 });
