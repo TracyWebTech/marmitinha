@@ -171,20 +171,17 @@
             </tr>
            </thead>
            <tbody>
-           {% for person in people %} 
-             <tr>
-              <td> {{ person.name }}</td>
-              {% if person.pk in pqc %}                                              
-                <td><div class="check_icon"></div></td>                         
-              {% else %}                                                        
-                <td><div class="uncheck_icon"></div></td>                       
-              {% endif %} 
-              {% if person.wash %}
-                <td><div class="check_icon"></div></td>
-              {% else %}
-                <td><div class="uncheck_icon"></div></td>
-              {% endif %}
-             </tr> 
+           {% for person in people %}
+             <tr rel="{% url 'meals:check_people' %}">
+              <td class="person" rel="{{ person.pk }}">{{ person.name }}</td>
+                <td class="eat">
+                    <div class="{% if person.pk in pqc %}check_icon{% else %}uncheck_icon{% endif %}" rel="eat"></div>
+                </td>
+              
+                <td class="washes">
+                    <div class="{% if person == who_wash %}check_icon{% else %}uncheck_icon{% endif %}" rel="wash"></div>
+                </td>
+             </tr>
            {% endfor %}
            </tbody>
           </table>
