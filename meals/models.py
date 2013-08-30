@@ -7,7 +7,7 @@ from people.models import Person
 
 
 class Meal(models.Model):
-    date = models.DateField()
+    date = models.DateField(unique=True)
     ordered = models.BooleanField(default=False)
     washer = models.ForeignKey('people.Person', null=True, blank=True)
     ticket = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -23,6 +23,9 @@ class PersonMeal(models.Model):
     class Meta:
         unique_together = (('person', 'meal'),)
 
+    def __unicode__(self):
+        return u'{} - ({})'.format(self.person.name, self.meal.date)
+
     def save(self, *args, **kwargs):
         if self.person.is_new and self.wash:
             n_wash = self.person.personmeal_set.filter(wash=True)
@@ -33,4 +36,13 @@ class PersonMeal(models.Model):
                     wash.save()
                 self.person.is_new = False
                 self.person.save()
+        super(PersonMeal, self).save(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        if self.wash:
+            pm = self.meal.personmeal_set.filter(wash=True)
+            if self.pk:
+                pm = pm.exclude(pk=self.pk)
+            if pm.exists():
+                raise ValidationError('Não pode fiote')
         super(PersonMeal, self).save(*args, **kwargs)

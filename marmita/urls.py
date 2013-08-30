@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     url(r'^people/', include('people.urls', namespace='people')),
+    url(r'^meals/', include('meals.urls', namespace='meals')),
 
     url(r'^admin/', include(admin.site.urls)),
 )

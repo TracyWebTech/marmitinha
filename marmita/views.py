@@ -12,8 +12,12 @@ from meals.models import Meal, PersonMeal
 
 def index(request):
     today = datetime.date.today()
-    people_filter = PersonMeal.objects.filter(meal__date=today)
-    pqc = [pm.pk for pm in people_filter]
+    people_meal_filter = PersonMeal.objects.filter(meal__date=today)
+    try:
+        who_wash = people_meal_filter.get(wash=True).person
+    except PersonMeal.DoesNotExist:
+        who_wash = None
+    pqc = [pm.person.pk for pm in people_meal_filter]
     try:
         m = Meal.objects.get(date=today)
     except Meal.DoesNotExist:
@@ -61,4 +65,5 @@ def index(request):
         'form': AuthenticationForm,
         'today': today.strftime("%d/%m/%Y"),
         'pqc': pqc,
+        'who_wash': who_wash,
     })
