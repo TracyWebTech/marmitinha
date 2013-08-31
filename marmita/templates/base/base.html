@@ -149,7 +149,7 @@
              <th>Lavou</th>
             </tr>
            </thead>
-           <tbody>
+           <tbody rel="{% url 'meals:uncheck_person' %}">
            {% for person in people %}
              <tr rel="{% url 'meals:check_person' %}">
               <td class="person" rel="{{ person.pk }}">{{ person.name }}</td>

@@ -22,12 +22,12 @@ $(function () {
   $('.uncheck_icon').click(function() {
     var $el = $(this);
     var request = $.ajax({
-      url: $(this).parent().parent().attr('rel'),
+      url: $(this).parents('tr').attr('rel'),
       type: 'POST',
       data: {
         'type_of': $(this).attr('rel'),
         'date': $('#datepicker').val(),
-        'person_pk': $(this).parent().parent().find('.person').attr('rel'),
+        'person_pk': $(this).parents('tr').find('.person').attr('rel'),
       },
     });
     request.done(function( data ) {
@@ -40,6 +40,22 @@ $(function () {
           $(this).attr('class', 'check_icon');
         });
       }
+    });
+  });
+
+  $('.check_icon').click(function () {
+    var $el = $(this);
+    var request = $.ajax({
+      url: $(this).parents('tbody').attr('rel'),
+      type: 'POST',
+      data: {
+        'type_of': $(this).attr('rel'),
+        'date': $('#datepicker').val(),
+        'person_pk': $(this).parents('tr').find('.person').attr('rel'),
+      },
+    });
+    request.done(function( data ) {
+      $el.attr('class', 'uncheck_icon');
     });
   });
 });

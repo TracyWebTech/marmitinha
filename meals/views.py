@@ -74,5 +74,29 @@ class CheckPersonView(View):
             # e verificar se a pessoa lavou naquele dia, caso tenha lavado,
             # mudar o status dela para 'não lavou', e vice-versa
         else:
-            pass
+            raise HttpResponseBadRequest()
             # levante uma exceção
+
+
+class UncheckPersonView(View):
+    def post(self, request, *args, **kwargs):
+        person_pk = request.POST.get('person_pk', None)
+        date = request.POST.get('date', None)
+        type_of = request.POST.get('type_of', None)
+        if not type_of or not date or not person_pk:
+            raise HttpResponseBadRequest()
+
+        person = get_object_or_404(Person, pk=person_pk)
+
+        date = datetime.datetime.strptime(date, '%d/%m/%Y')
+        meal = get_object_or_404(Meal, date=date)
+
+        pm = PersonMeal.objects.get(meal=meal, person=person)
+        if type_of == 'eat':
+            pm.delete()
+        elif type_of == 'wash':
+            pm.wash = False
+            pm.save()
+        else:
+            raise HttpResponseBadRequest()
+        return HttpResponse()
