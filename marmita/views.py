@@ -42,6 +42,9 @@ def index(request):
             'people': [],
             'min': '',
             'form': AuthenticationForm,
+            'today': today.strftime("%d/%m/%Y"),
+            'pqc': [],
+            'who_wash': None,
         })
     people_copy = list(ranking)
     people_copy.pop()
