@@ -11,6 +11,7 @@ $(function () {
       data: {'name': name},
     });
     request.done(function ( data ) {
+      $('.empty_ranking').remove();
       $a = $('<a>');
       $a.attr('class', 'list-group-item im_new');
       $a.append(data + ' 0,0');

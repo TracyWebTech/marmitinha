@@ -113,6 +113,8 @@
             </a>
             {% for person in people %}
               <a href="javascript:void(0);" class="list-group-item{% if person.is_new %} im_new{% endif %} person_ranking" rel="{{ person.pk }}">{{ person.name }} {{ person.get_average }}</a>
+              {% empty %}
+              <a href="javascript:void(0);" class="list-group-item empty_ranking">Adicione pessoas para que a geração do ranking</a>
             {% endfor %}
           </div>
           {% if user.is_authenticated %}
@@ -143,6 +145,7 @@
            <input value="{{ today }}" type="text" id="datepicker" placeholder="Data" class="form-control" rel="{% url 'meals:change' %}" />
          </div>
          <div class="panel panel-default">
+          {% if people %}
           <table class="table people_manager">
            <thead>
             <tr>
@@ -166,6 +169,9 @@
            {% endfor %}
            </tbody>
           </table>
+          {% else %}
+           <div class="no_people" style="padding: 5px;">Não há pessoas no sistema, adicione-as para visualizar a tabela</div>
+          {% endif %}
          </div>
 
         </div>
