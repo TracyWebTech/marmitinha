@@ -137,12 +137,10 @@
         <div class="col-lg-4">
          <h2>Área do admin</h2>
          <div>
-           <input value="{{ today }}" type="text" id="datepicker" placeholder="Data" class="form-control" style="z-index:10" />
+           <input value="{{ today }}" type="text" id="datepicker" placeholder="Data" class="form-control" rel="{% url 'meals:change' %}" />
          </div>
          <div class="panel panel-default">
-          <!-- Default panel contents -->
-          <!-- Table -->
-          <table class="table">
+          <table class="table people_manager">
            <thead>
             <tr>
              <th>Nome</th>

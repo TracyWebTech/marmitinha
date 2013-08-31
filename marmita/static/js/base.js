@@ -58,4 +58,24 @@ $(function () {
       $el.attr('class', 'uncheck_icon');
     });
   });
+
+  $('#datepicker').change(function () {
+    var request = $.ajax({
+      url: $(this).attr('rel'),
+      type: 'POST',
+      data: {'date': $(this).val(),},
+    });
+    request.done(function ( data ) {
+      $('.people_manager').find('.check_icon').each(function () {
+        $(this).attr('class', 'uncheck_icon');
+      });
+      for (index in data) {
+        var person_l = $('.person[rel="'+data[index][0]+'"]').parent();
+        person_l.find('[rel="eat"]').attr('class', 'check_icon');
+        if (data[index][1] == true) {
+          person_l.find('[rel="wash"]').attr('class', 'check_icon');
+        }
+      }
+    });
+  });
 });

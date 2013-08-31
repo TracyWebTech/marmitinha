@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import json
 
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
@@ -37,7 +38,7 @@ class CheckPersonView(View):
         date = request.POST.get('date', None)
         type_of = request.POST.get('type_of', None)
         if not type_of or not date or not person_pk:
-            raise HttpResponseBadRequest()
+            return HttpResponseBadRequest()
 
         person = get_object_or_404(Person, pk=person_pk)
 
@@ -74,8 +75,7 @@ class CheckPersonView(View):
             # e verificar se a pessoa lavou naquele dia, caso tenha lavado,
             # mudar o status dela para 'não lavou', e vice-versa
         else:
-            raise HttpResponseBadRequest()
-            # levante uma exceção
+            return HttpResponseBadRequest()
 
 
 class UncheckPersonView(View):
@@ -100,3 +100,17 @@ class UncheckPersonView(View):
         else:
             raise HttpResponseBadRequest()
         return HttpResponse()
+
+
+class ChangeDateView(View):
+    def post(self, request, *args, **kwargs):
+        date = request.POST.get('date', None)
+
+        if not date:
+            return HttpResponseBadRequest()
+
+        date = datetime.datetime.strptime(date, '%d/%m/%Y')
+        meal = get_object_or_404(Meal, date=date)
+
+        data = list(meal.personmeal_set.values_list('person__pk', 'wash'))
+        return HttpResponse(json.dumps(data), content_type='application/json')
