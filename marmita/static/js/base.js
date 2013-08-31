@@ -19,7 +19,7 @@ $(function () {
     });
   });
 
-  $('.uncheck_icon').click(function() {
+  $('.people_manager').on('click', '.uncheck_icon', function() {
     var $el = $(this);
     var request = $.ajax({
       url: $(this).parents('tr').attr('rel'),
@@ -43,7 +43,7 @@ $(function () {
     });
   });
 
-  $('.check_icon').click(function () {
+  $('.people_manager').on('click', '.check_icon', function () {
     var $el = $(this);
     var request = $.ajax({
       url: $(this).parents('tbody').attr('rel'),

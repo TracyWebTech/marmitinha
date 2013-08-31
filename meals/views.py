@@ -31,7 +31,6 @@ def create_person_meal_with_wash(meal, person, pm=None, has_pm=False):
     return PersonMeal.objects.create(meal=meal, person=person, wash=True)
 
 
-
 class CheckPersonView(View):
     def post(self, request, *args, **kwargs):
         person_pk = request.POST.get('person_pk', None)
