@@ -63,8 +63,9 @@
             <input type="hidden" name="next" value="{% url 'home' %}" />
             {% csrf_token %}
             {% if user.is_authenticated %}
-              <p style="color:#909090">Bem vindo, {{ user.username }}.</p>
-              <input type="submit" class="btn btn-success" value="Sair" />
+              <p style="color:#909090; margin: 0;">Bem vindo, {{ user.username }}.
+                <input type="submit" class="btn btn-success" value="Sair" />
+              </p>
             {% else %}
             {% if form.errors %}
               <p class="text-warning">Seu usuário e senha não batem, tente novamente.</p>
