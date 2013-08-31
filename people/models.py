@@ -16,8 +16,8 @@ class Person(models.Model):
     def get_average(self):
         eat = self.count_eat()
         if not eat or self.is_new:
-            return 0.0
-        return round(float(self.count_wash())/self.count_eat(), 3)
+            return unicode(0.0)
+        return unicode(round(float(self.count_wash())/self.count_eat(), 3))
 
    #def maximum(self):
    #    return self.objects.all().get(Max('get_average()'))
