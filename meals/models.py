@@ -51,7 +51,10 @@ class Meal(models.Model):
     def get_lowest_avg(self):
         people_meal = list(self.personmeal_set.all())
         people_meal.sort(key=lambda x: x.person.get_average(), reverse=True)
-        return people_meal[-1]
+        try:
+            return people_meal[-1]
+        except IndexError:
+            return None
 
     def __unicode__(self):
         return unicode(self.date)
