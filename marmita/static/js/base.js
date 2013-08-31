@@ -55,7 +55,9 @@ $(function () {
       },
     });
     request.done(function( data ) {
-      $el.attr('class', 'uncheck_icon');
+      $el.parents('tr').find('.check_icon').each(function () {
+        $(this).attr('class', 'uncheck_icon');
+      });
     });
   });
 
