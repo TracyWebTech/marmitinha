@@ -41,6 +41,7 @@ $(function () {
         });
       }
       $('.person_ranking[rel="'+data['pk']+'"]').text(data['person_data']);
+      $('.a-btn-slide-text').text(data['washer']);
     });
   });
 
@@ -59,6 +60,7 @@ $(function () {
       $el.parents('tr').find('.check_icon').each(function () {
         $(this).attr('class', 'uncheck_icon');
       });
+      $('.a-btn-slide-text').text(data['washer']);
     });
   });
 

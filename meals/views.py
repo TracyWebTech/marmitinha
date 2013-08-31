@@ -62,7 +62,8 @@ class CheckPersonView(View):
                         'person_data': u'{} {}'.format(
                             pm.person.name,
                             pm.person.get_average(),
-                        )
+                        ),
+                        'washer': pm.meal.washer_of_today().name,
                     }),
                     content_type='application/json'
                 )
@@ -81,7 +82,8 @@ class CheckPersonView(View):
                     'person_data': u'{} {}'.format(
                         pw.person.name,
                         pw.person.get_average(),
-                    )
+                    ),
+                    'washer': pw.meal.washer_of_today().name,
                 }),
                 content_type='application/json'
             )
@@ -118,7 +120,10 @@ class UncheckPersonView(View):
             pm.save()
         else:
             raise HttpResponseBadRequest()
-        return HttpResponse()
+        return HttpResponse(
+            json.dumps({'washer': pm.meal.washer_of_today().name,}),
+            content_type='application/json'
+        )
 
 
 class ChangeDateView(View):

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import random
+
 from django.db import models
 from django.core.exceptions import ValidationError
 
@@ -11,6 +13,45 @@ class Meal(models.Model):
     ordered = models.BooleanField(default=False)
     washer = models.ForeignKey('people.Person', null=True, blank=True)
     ticket = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    def washer_of_today(self):
+        who_ate = list(self.personmeal_set.all())
+
+        if not who_ate and not self.washer:
+            return self.get_lowest_avg()
+        elif not who_ate and self.washer:
+            return self.washer
+
+        the_washer = None
+        new_member = self.personmeal_set.filter(person__is_new=True)
+        if new_member:
+            if new_member.count() > 1:
+                the_washer = random.choice(list(new_member)).person
+            else:
+                the_washer = new_member[0].person
+        if not the_washer:
+            the_washer = self.get_lowest_avg()
+        if not self.ordered and not the_washer.person.is_new and \
+            the_washer.person.get_average() in [p.person.get_average() \
+                    for p in who_ate]:
+            draw = []
+            for p in who_ate:
+                if p.person.get_average() == the_washer.person.get_average():
+                    draw.append(p)
+            the_washer = random.choice(draw)
+
+        self.washer = the_washer.person
+        if not self.ordered:
+            self.ordered = True
+
+        self.save()
+
+        return self.washer
+
+    def get_lowest_avg(self):
+        people_meal = list(self.personmeal_set.all())
+        people_meal.sort(key=lambda x: x.person.get_average(), reverse=True)
+        return people_meal[-1]
 
     def __unicode__(self):
         return unicode(self.date)
