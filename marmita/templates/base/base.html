@@ -3,20 +3,16 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
     <link rel="shortcut icon" href="{{ STATIC_URL }}img/logo_novo3.jpg">
-    <script src="{{ STATIC_URL }}assets/bootstrap-3.0.0/assets/js/jquery.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.cookie.js"></script>
-    <script src="http://leaverou.github.com/prefixfree/prefixfree.min.js"></script>
     <title>Marmitinha Tracy</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="{{ STATIC_URL }}assets/bootstrap-3.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="{{ STATIC_URL }}js/jquery-1.10.2.min.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.cookie.js"></script>
+
+    <!-- Bootstrap -->
+    <link href="{{ STATIC_URL }}assets/bootstrap3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href='http://fonts.googleapis.com/css?family=Candal' rel='stylesheet' type='text/css'>
-    <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet">
     <!-- Custom styles for this template -->
-    <link href="{{ STATIC_URL }}assets/bootstrap-3.0.0/examples/jumbotron/jumbotron.css" rel="stylesheet">
     <script src="{{ STATIC_URL }}assets/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
     <link href="{{ STATIC_URL }}assets/jquery-ui-1.10.3.custom/css/overcast/jquery-ui-1.10.3.custom.min.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}css/screen.css" rel="stylesheet">
@@ -100,7 +96,6 @@
       </div>
     </div>
 
-    <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div class="container">
         <br>
@@ -117,7 +112,6 @@
           </div>
         </div>
         <p>A Marmitinha Tracy é um serviço de almoço diário disponibilizado pela Tracy Web Technologies, não só para os funcionários da própria empresa, como para todos aqueles dentro do Ambiente CoNéctar que solicitarem tal serviço, no entanto, existe uma obrigação, lavar a marmita térmica, e aqui informamos, de maneira justa, de quem é a vez.</p>
-        <p><a class="btn btn-primary btn-lg">Sobre &raquo;</a></p>
       </div>
     </div>
 
@@ -172,7 +166,7 @@
            </thead>
            <tbody>
            {% for person in people %}
-             <tr rel="{% url 'meals:check_people' %}">
+             <tr rel="{% url 'meals:check_person' %}">
               <td class="person" rel="{{ person.pk }}">{{ person.name }}</td>
                 <td class="eat">
                     <div class="{% if person.pk in pqc %}check_icon{% else %}uncheck_icon{% endif %}" rel="eat"></div>
@@ -193,15 +187,11 @@
       <hr>
 
       <footer>
-        <p>&copy; Company 2013</p>
+        <p>Tracy Web Technologies &copy; Company 2013</p>
       </footer>
-    </div> <!-- /container -->
-
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
+    </div>
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{{ STATIC_URL }}assets/bootstrap-3.0.0/dist/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}assets/bootstrap3/dist/js/bootstrap.min.js"></script>
   </body>
 </html>
 
