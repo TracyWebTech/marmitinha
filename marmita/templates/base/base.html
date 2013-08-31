@@ -51,36 +51,23 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Marmitinha Tracy</a>
+          <a class="navbar-brand" href="javascript:void(0);">Marmitinha Tracy</a>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li class="divider"></li>
-                <li class="dropdown-header">Nav header</li>
-                <li><a href="#">Separated link</a></li>
-                <li><a href="#">One more separated link</a></li>
-              </ul>
-            </li>
+            <li class="active"><a href="{% url 'home' %}">Início</a></li>
+            <li><a href="#contact">Contato</a></li>
           </ul>
           {% block login %}
           <form class="navbar-form navbar-right" method="POST" action="{% if user.is_authenticated %}{% url 'logout' %}{% else %}{% url 'login' %}{% endif %}">
-            <input type="hidden" name = "next" value = "{% url 'home' %}" />
+            <input type="hidden" name="next" value="{% url 'home' %}" />
             {% csrf_token %}
             {% if user.is_authenticated %}
               <p style="color:#909090">Bem vindo, {{ user.username }}.</p>
-              <input type="submit" class="btn btn-success" value="Log out" />
+              <input type="submit" class="btn btn-success" value="Sair" />
             {% else %}
             {% if form.errors %}
-              <p class="text-warning">Your username and password didn't match. Please try again.</p>
+              <p class="text-warning">Seu usuário e senha não batem, tente novamente.</p>
             {% endif %}
                 <div class="form-group">
                   <input id="id_username" name="username" type="text" placeholder="Login" class="form-control" />
@@ -88,7 +75,7 @@
                 <div class="form-group">
                   <input id="id_password" name="password" type="password" placeholder="Password" class="form-control" />
                 </div>
-                <button type="submit" class="btn btn-success">Sign In</button>
+                <button type="submit" class="btn btn-success">Entrar</button>
             {% endif %}
             </form>
           {% endblock %}
@@ -116,16 +103,15 @@
     </div>
 
     <div class="container">
-      <!-- Example row of columns -->
       <div class="row">
         <div class="col-lg-4">
           <h2>Ranking</h2>
           <div class="list-group">
-            <a href="#" class="list-group-item active">
+            <a href="javascript:void(0);" class="list-group-item active">
               Ranking
             </a>
             {% for person in people %}
-              <a href="#" class="list-group-item{% if person.is_new %} im_new{% endif %}">{{ person.name }} {{ person.get_average }}</a>
+              <a href="javascript:void(0);" class="list-group-item{% if person.is_new %} im_new{% endif %}">{{ person.name }} {{ person.get_average }}</a>
             {% endfor %}
           </div>
           <div class="form-group">
@@ -133,13 +119,12 @@
             <button class="btn btn-success pull-right" id="btn_add_person" rel="{% url 'people:add' %}">Adicionar</button>
             <div class="status"></div>
           </div>
-          <!--<p>Como saber se a sua vez de lavar está chegando? Veja o Ranking! Para entender o funcionamento do Ranking, clique em "Ver detalhes"</p>  -->
-          <p><a class="btn btn-default" href="#">Entenda o Ranking &raquo;</a></p>
+          <p><a class="btn btn-default" href="javascript:void(0);">Entenda o Ranking &raquo;</a></p>
         </div>
         <div class="col-lg-4">
           <h2>De quem é a vez de lavar?</h2>
           <div class="button-wrapper">
-          <a href="#" class="a-btn" style="text-decoration:none">
+          <a href="javascript:void(0);" class="a-btn" style="text-decoration:none">
             <span class="a-btn-text">Veja</span>
             {% if min %}
                 <span class="a-btn-slide-text">{{ min.name }}</span>
