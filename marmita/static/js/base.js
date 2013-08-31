@@ -32,7 +32,7 @@ $(function () {
     });
     request.done(function( data ) {
       $el.attr('class', 'check_icon');
-      if (data == 'wash') {
+      if (data['wash'] == true) {
         $el.parents('table').find('[rel="wash"]').each(function() {
           $(this).attr('class', 'uncheck_icon');
         });
@@ -40,6 +40,7 @@ $(function () {
           $(this).attr('class', 'check_icon');
         });
       }
+      $('.person_ranking[rel="'+data['pk']+'"]').text(data['person_data']);
     });
   });
 

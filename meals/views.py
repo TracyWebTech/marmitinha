@@ -55,7 +55,17 @@ class CheckPersonView(View):
             except PersonMeal.DoesNotExist:
                 pm = PersonMeal.objects.create(meal=meal, person=person)
             finally:
-                return HttpResponse()
+                return HttpResponse(
+                    json.dumps({
+                        'wash': False,
+                        'pk': pm.person.pk,
+                        'person_data': u'{} {}'.format(
+                            pm.person.name,
+                            pm.person.get_average(),
+                        )
+                    }),
+                    content_type='application/json'
+                )
 
         elif type_of == 'wash':
             try:
@@ -64,7 +74,17 @@ class CheckPersonView(View):
                 pw = create_person_meal_with_wash(meal, person)
             else:
                 create_person_meal_with_wash(meal, person, pw, has_pm=True)
-            return HttpResponse(u'wash')
+            return HttpResponse(
+                json.dumps({
+                    'wash': True,
+                    'pk': pw.person.pk,
+                    'person_data': u'{} {}'.format(
+                        pw.person.name,
+                        pw.person.get_average(),
+                    )
+                }),
+                content_type='application/json'
+            )
             # faça o processo de verificar se o personmeal desse pessoa já existe
             # se existe, setar o atributo wash como True e salvar
             # caso não exista, criar o personmeal da pessoa e setar o wash como true
