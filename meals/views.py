@@ -11,12 +11,24 @@ from meals.models import Meal, PersonMeal
 from people.models import Person
 
 
-def create_person_meal_with_wash(meal, person):
+def create_person_meal_with_wash(meal, person, pm=None, has_pm=False):
     try:
+        pw = PersonMeal.objects.get(meal=meal, wash=True)
+    except PersonMeal.DoesNotExist:
+        if has_pm and pm:
+            pm.wash = True
+            pm.save()
+            return pm
         return PersonMeal.objects.create(meal=meal, person=person, wash=True)
-    except ValidationError:
-        PersonMeal.objects.get(meal=meal, wash=True).delete()
-        return PersonMeal.objects.create(meal=meal, person=person, wash=True)
+    else:
+        pw.wash = False
+        pw.save()
+    if has_pm and pm:
+        pm.wash = True
+        pm.save()
+        return pm
+    return PersonMeal.objects.create(meal=meal, person=person, wash=True)
+
 
 
 class CheckPersonView(View):
@@ -51,8 +63,7 @@ class CheckPersonView(View):
             except PersonMeal.DoesNotExist:
                 pw = create_person_meal_with_wash(meal, person)
             else:
-                pw.wash = True
-                pw.save()
+                create_person_meal_with_wash(meal, person, pw, has_pm=True)
             return HttpResponse(u'wash')
             # faça o processo de verificar se o personmeal desse pessoa já existe
             # se existe, setar o atributo wash como True e salvar
@@ -65,6 +76,3 @@ class CheckPersonView(View):
         else:
             pass
             # levante uma exceção
-
-
-# obs.: É necessário o retorn de um HttpResponse()

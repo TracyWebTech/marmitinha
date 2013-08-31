@@ -33,7 +33,12 @@ $(function () {
     request.done(function( data ) {
       $el.attr('class', 'check_icon');
       if (data == 'wash') {
-        $el.parents('tr').find('uncheck_icon').attr('class', 'check_icon');  
+        $el.parents('table').find('[rel="wash"]').each(function() {
+          $(this).attr('class', 'uncheck_icon');
+        });
+        $el.parents('tr').find('.uncheck_icon').each(function() {
+          $(this).attr('class', 'check_icon');
+        });
       }
     });
   });
