@@ -17,12 +17,17 @@ class Meal(models.Model):
     def washer_of_today(self):
         who_ate = [p.person for p in self.personmeal_set.all()]
 
-        if not who_ate and not self.washer:
-            return self.get_lowest_avg()
-        elif not who_ate and self.washer:
+        if not who_ate and self.washer:
+            return self.washer
+        elif not who_ate and not self.washer:
+            self.washer = self.get_lowest_avg()
+            self.save()
             return self.washer
 
-        the_washer = None
+        if self.washer and self.washer in who_ate:
+            the_washer = self.washer
+        else:
+            the_washer = None
         new_member = self.personmeal_set.filter(person__is_new=True)
         if new_member:
             if new_member.count() > 1:
@@ -49,7 +54,10 @@ class Meal(models.Model):
         return self.washer
 
     def get_lowest_avg(self):
-        people = list(Person.objects.all())
+        try:
+            people = [p.person for p in self.personmeal_set.all()]
+        except PersonMeal.DoesNotExist:
+            people = list(Person.objects.all())
         people.sort(key=lambda x: x.get_average(), reverse=True)
         try:
             return people[-1]
