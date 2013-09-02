@@ -58,10 +58,14 @@ $(function () {
       },
     });
     request.done(function( data ) {
+      $('.a-btn-slide-text').text(data['washer']);
+      if (data['wash'] == true) {
+        $el.attr('class', 'uncheck_icon');
+        return false;
+      }
       $el.parents('tr').find('.check_icon').each(function () {
         $(this).attr('class', 'uncheck_icon');
       });
-      $('.a-btn-slide-text').text(data['washer']);
     });
   });
 
