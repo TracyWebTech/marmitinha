@@ -114,14 +114,19 @@ class UncheckPersonView(View):
 
         pm = PersonMeal.objects.get(meal=meal, person=person)
         if type_of == 'eat':
+            wash = False
             pm.delete()
         elif type_of == 'wash':
+            wash = True
             pm.wash = False
             pm.save()
         else:
             raise HttpResponseBadRequest()
         return HttpResponse(
-            json.dumps({'washer': pm.meal.washer_of_today().name,}),
+            json.dumps({
+                'washer': pm.meal.washer_of_today().name,
+                'wash': wash
+            }),
             content_type='application/json'
         )
 
@@ -134,7 +139,9 @@ class ChangeDateView(View):
             return HttpResponseBadRequest()
 
         date = datetime.datetime.strptime(date, '%d/%m/%Y')
-        meal = get_object_or_404(Meal, date=date)
-
+        try:
+            meal = Meal.objects.get(date=date)
+        except Meal.DoesNotExist:
+            meal = Meal.objects.create(date=date)
         data = list(meal.personmeal_set.values_list('person__pk', 'wash'))
         return HttpResponse(json.dumps(data), content_type='application/json')

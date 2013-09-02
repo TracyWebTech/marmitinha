@@ -160,9 +160,9 @@
            {% for person in people %}
              <tr rel="{% url 'meals:check_person' %}">
               <td class="person" rel="{{ person.pk }}">{{ person.name }}</td>
-                <td class="eat">
-                    <div class="{% if person.pk in pqc %}check_icon{% else %}uncheck_icon{% endif %}" rel="eat"></div>
-                </td>
+              <td class="eat">
+                  <div class="{% if person.pk in pqc %}check_icon{% else %}uncheck_icon{% endif %}" rel="eat"></div>
+              </td>
               
                 <td class="washes">
                     <div class="{% if person == who_wash %}check_icon{% else %}uncheck_icon{% endif %}" rel="wash"></div>
