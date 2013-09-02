@@ -126,18 +126,20 @@
           {% endif %}
           <p><a class="btn btn-default" href="javascript:void(0);">Entenda o Ranking &raquo;</a></p>
         </div>
-        <div class="col-lg-4">
-          <h2>De quem é a vez de lavar?</h2>
-          <div class="button-wrapper">
-          <a href="javascript:void(0);" class="a-btn" style="text-decoration:none">
-            <span class="a-btn-text">Veja</span>
+          <div class="col-lg-4">
             {% if min %}
-                <span class="a-btn-slide-text">{{ min.name }}</span>
+              <h2>De quem é a vez de lavar?</h2>
+              <div class="button-wrapper">
+                <a href="javascript:void(0);" class="a-btn" style="text-decoration:none">
+                  <span class="a-btn-text">Veja</span>
+                  <span class="a-btn-slide-text">{{ min.name }}</span>
+                  <span class="a-btn-icon-right"><span></span></span>
+                </a>
+              </div>
+            {% else %}
+              <h2>Não há ninguém para lavar. :'(</h2>
             {% endif %}
-            <span class="a-btn-icon-right"><span></span></span>
-          </a>
           </div>
-       </div>
        {% if user.is_authenticated %}
         <div class="col-lg-4">
          <h2>Área do admin</h2>

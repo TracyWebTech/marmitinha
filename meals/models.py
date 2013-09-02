@@ -15,7 +15,7 @@ class Meal(models.Model):
     ticket = models.PositiveSmallIntegerField(null=True, blank=True)
 
     def washer_of_today(self):
-        who_ate = list(self.personmeal_set.all())
+        who_ate = [p.person for p in self.personmeal_set.all()]
 
         if not who_ate and not self.washer:
             return self.get_lowest_avg()
@@ -31,16 +31,16 @@ class Meal(models.Model):
                 the_washer = new_member[0].person
         if not the_washer:
             the_washer = self.get_lowest_avg()
-        if not self.ordered and not the_washer.person.is_new and \
-            the_washer.person.get_average() in [p.person.get_average() \
+        if not self.ordered and not the_washer.is_new and \
+            the_washer.get_average() in [p.get_average() \
                     for p in who_ate]:
             draw = []
             for p in who_ate:
-                if p.person.get_average() == the_washer.person.get_average():
+                if p.get_average() == the_washer.get_average():
                     draw.append(p)
             the_washer = random.choice(draw)
 
-        self.washer = the_washer.person
+        self.washer = the_washer
         if not self.ordered:
             self.ordered = True
 
@@ -49,10 +49,10 @@ class Meal(models.Model):
         return self.washer
 
     def get_lowest_avg(self):
-        people_meal = list(self.personmeal_set.all())
-        people_meal.sort(key=lambda x: x.person.get_average(), reverse=True)
+        people = list(Person.objects.all())
+        people.sort(key=lambda x: x.get_average(), reverse=True)
         try:
-            return people_meal[-1]
+            return people[-1]
         except IndexError:
             return None
 
