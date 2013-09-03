@@ -54,7 +54,10 @@ class CheckPersonView(View):
                 pm = PersonMeal.objects.get(meal=meal, person=person)
             except PersonMeal.DoesNotExist:
                 pm = PersonMeal.objects.create(meal=meal, person=person)
-            finally:
+            try:
+                pmn = pm.meal.washer_of_today().name
+            except AttributeError:
+                pmn = None 
                 return HttpResponse(
                     json.dumps({
                         'wash': False,
@@ -63,7 +66,7 @@ class CheckPersonView(View):
                             pm.person.name,
                             pm.person.get_average(),
                         ),
-                        'washer': pm.meal.washer_of_today().name,
+                        'washer': pmn,
                     }),
                     content_type='application/json'
                 )
@@ -122,9 +125,13 @@ class UncheckPersonView(View):
             pm.save()
         else:
             raise HttpResponseBadRequest()
+        try:                                                                
+            pmn = pm.meal.washer_of_today().name                            
+        except AttributeError:                                              
+                pmn = None 
         return HttpResponse(
             json.dumps({
-                'washer': pm.meal.washer_of_today().name,
+                'washer': pmn,
                 'wash': wash
             }),
             content_type='application/json'

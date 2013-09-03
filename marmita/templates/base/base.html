@@ -112,7 +112,7 @@
               Ranking
             </a>
             {% for person in people %}
-              <a href="javascript:void(0);" class="list-group-item{% if person.is_new %} im_new{% endif %} person_ranking" rel="{{ person.pk }}">{{ person.name }} {{ person.get_average }}</a>
+              <a href="javascript:void(0);" class="list-group-item{% if person.is_new %} im_new{% endif %} person_ranking" rel="{{ person.pk }}">{{ person.name }} {{ person.get_average }} | {{ person.weight }}</a>
               {% empty %}
               <a href="javascript:void(0);" class="list-group-item empty_ranking">Adicione pessoas para que a geração do ranking</a>
             {% endfor %}

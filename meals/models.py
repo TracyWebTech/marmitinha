@@ -14,44 +14,57 @@ class Meal(models.Model):
     washer = models.ForeignKey('people.Person', null=True, blank=True)
     ticket = models.PositiveSmallIntegerField(null=True, blank=True)
 
-    def washer_of_today(self):
-        who_ate = [p.person for p in self.personmeal_set.all()]
+    @classmethod
+    def _create_random(cls):
+        people = list(Person.objects.all())
+        random.shuffle(people)
+        for i, person in enumerate(people):
+            person.weight = i
+            person.save()
 
-        if not who_ate and self.washer:
-            return self.washer
-        elif not who_ate and not self.washer:
-            self.washer = self.get_lowest_avg()
-            self.save()
-            return self.washer
+    def __init__(self, *args, **kwargs):
+        super(Meal, self).__init__(*args, **kwargs)
+        Meal._create_random()        
 
-        if self.washer and self.washer in who_ate:
-            the_washer = self.washer
-        else:
-            the_washer = None
-        new_member = self.personmeal_set.filter(person__is_new=True)
-        if new_member:
-            if new_member.count() > 1:
-                the_washer = random.choice(list(new_member)).person
-            else:
-                the_washer = new_member[0].person
-        if not the_washer:
-            the_washer = self.get_lowest_avg()
-        if not self.ordered and not the_washer.is_new and \
-            the_washer.get_average() in [p.get_average() \
-                    for p in who_ate]:
-            draw = []
-            for p in who_ate:
-                if p.get_average() == the_washer.get_average():
-                    draw.append(p)
-            the_washer = random.choice(draw)
+    def washer_of_today(self):        
+        return None
+    #     who_ate = [p.person for p in self.personmeal_set.all()]
 
-        self.washer = the_washer
-        if not self.ordered:
-            self.ordered = True
+    #     if not who_ate and self.washer:
+    #         return self.washer
+    #     elif not who_ate and not self.washer:
+    #         self.washer = self.get_lowest_avg()
+    #         self.save()
+    #         return self.washer
 
-        self.save()
+    #     if self.washer and self.washer in who_ate:
+    #         the_washer = self.washer
+    #     else:
+    #         the_washer = None
+    #     new_member = self.personmeal_set.filter(person__is_new=True)
+    #     if new_member:
+    #         if new_member.count() > 1:
+    #             the_washer = random.choice(list(new_member)).person
+    #         else:
+    #             the_washer = new_member[0].person
+    #     if not the_washer:
+    #         the_washer = self.get_lowest_avg()
+    #     if not self.ordered and not the_washer.is_new and \
+    #         the_washer.get_average() in [p.get_average() \
+    #                 for p in who_ate]:
+    #         draw = []
+    #         for p in who_ate:
+    #             if p.get_average() == the_washer.get_average():
+    #                 draw.append(p)
+    #         the_washer = random.choice(draw)
 
-        return self.washer
+    #     self.washer = the_washer
+    #     if not self.ordered:
+    #         self.ordered = True
+
+    #     self.save()
+
+    #     return self.washer
 
     def get_lowest_avg(self):
         try:
