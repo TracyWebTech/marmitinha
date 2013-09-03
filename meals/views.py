@@ -58,18 +58,18 @@ class CheckPersonView(View):
                 pmn = pm.meal.washer_of_today().name
             except AttributeError:
                 pmn = None 
-                return HttpResponse(
-                    json.dumps({
-                        'wash': False,
-                        'pk': pm.person.pk,
-                        'person_data': u'{} {}'.format(
-                            pm.person.name,
-                            pm.person.get_average(),
-                        ),
-                        'washer': pmn,
-                    }),
-                    content_type='application/json'
-                )
+            return HttpResponse(
+                json.dumps({
+                    'wash': False,
+                    'pk': pm.person.pk,
+                    'person_data': u'{} {}'.format(
+                        pm.person.name,
+                        pm.person.get_average(),
+                    ),
+                    'washer': pmn,
+                }),
+                content_type='application/json'
+            )
 
         elif type_of == 'wash':
             try:
@@ -78,6 +78,10 @@ class CheckPersonView(View):
                 pw = create_person_meal_with_wash(meal, person)
             else:
                 create_person_meal_with_wash(meal, person, pw, has_pm=True)
+            try:                                                                    
+                pwn = pw.meal.washer_of_today().name                                
+            except AttributeError:                                                  
+                pwn = None
             return HttpResponse(
                 json.dumps({
                     'wash': True,
@@ -86,7 +90,7 @@ class CheckPersonView(View):
                         pw.person.name,
                         pw.person.get_average(),
                     ),
-                    'washer': pw.meal.washer_of_today().name,
+                    'washer': pwn,
                 }),
                 content_type='application/json'
             )
