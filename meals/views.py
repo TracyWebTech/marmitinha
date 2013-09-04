@@ -55,7 +55,7 @@ class CheckPersonView(View):
             except PersonMeal.DoesNotExist:
                 pm = PersonMeal.objects.create(meal=meal, person=person)
             try:
-                pmn = pm.meal.washer_of_today().name
+                pmn = pm.meal.get_lowest_avg().name
             except AttributeError:
                 pmn = None 
             return HttpResponse(
@@ -79,7 +79,7 @@ class CheckPersonView(View):
             else:
                 create_person_meal_with_wash(meal, person, pw, has_pm=True)
             try:                                                                    
-                pwn = pw.meal.washer_of_today().name                                
+                pwn = pw.meal.get_lowest_avg().name                                
             except AttributeError:                                                  
                 pwn = None
             return HttpResponse(
@@ -130,7 +130,7 @@ class UncheckPersonView(View):
         else:
             raise HttpResponseBadRequest()
         try:                                                                
-            pmn = pm.meal.washer_of_today().name                            
+            pmn = pm.meal.get_lowest_avg().name                            
         except AttributeError:                                              
                 pmn = None 
         return HttpResponse(

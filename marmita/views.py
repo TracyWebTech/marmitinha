@@ -66,7 +66,7 @@ def index(request):
 
     return render(request, 'index.html', {
         'people': ranking,
-        'min': m.washer_of_today(),
+        'min': m.get_lowest_avg(),
         'form': AuthenticationForm,
         'today': today.strftime("%d/%m/%Y"),
         'pqc': pqc,

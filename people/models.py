@@ -4,7 +4,6 @@ class Person(models.Model):
     name = models.CharField(max_length=70)
     is_new = models.BooleanField(default=True)
     weight = models.PositiveSmallIntegerField(blank=True, null=True)
-    
         
     def count_wash(self):
         #countwash = PersonMeal.objects.filter(wash=True, person=self).count()
