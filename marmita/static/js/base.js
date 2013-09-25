@@ -76,16 +76,54 @@ $(function () {
       data: {'date': $(this).val(),},
     });
     request.done(function ( data ) {
+      //console.log(data['list']);
       $('.people_manager').find('.check_icon').each(function () {
         $(this).attr('class', 'uncheck_icon');
-      });
-      for (index in data) {
-        var person_l = $('.person[rel="'+data[index][0]+'"]').parent();
+      });                              
+      $('#spinner').empty().val(data['tickets']); 
+      for (index in data['list']) {
+        var person_l = $('.person[rel="'+data['list'][index][0]+'"]').parent();
         person_l.find('[rel="eat"]').attr('class', 'check_icon');
-        if (data[index][1] == true) {
+        if (data['list'][index][1] == true) {
           person_l.find('[rel="wash"]').attr('class', 'check_icon');
         }
       }
     });
   });
+
+
+  $('#updown').on('click', '.ui-icon-triangle-1-n', function () {                 
+    var $el = $(this);                                                          
+    var abcde = parseInt($('#spinner').val()) + 1; 
+    var request = $.ajax({                                                      
+      url: $(this).parent().attr('rel'),                                
+      type: 'POST',                                                             
+      data: {                                                                   
+        'date': $('#datepicker').val(),                                         
+        'ticket_num': abcde,
+      },                                                                        
+    });                                                                         
+    request.done(function( data ) {
+      $('#spinner').empty().val(abcde);
+          
+    });                                                                         
+  });
+  $('#updown').on('click', '.ui-icon-triangle-1-s', function () {               
+    var $el = $(this);                                                          
+    var abcde = parseInt($('#spinner').val()) - 1;                              
+    var request = $.ajax({                                                      
+      url: $(this).parent().attr('rel'),                                        
+      type: 'POST',                                                             
+      data: {                                                                   
+        'date': $('#datepicker').val(),                                         
+        'ticket_num': abcde,                                                    
+      },                                                                        
+    });                                                                         
+    request.done(function( data ) {                                             
+      $('#spinner').empty().val(abcde);                                         
+                                                                                
+    });                                                                         
+  });
+
+
 });

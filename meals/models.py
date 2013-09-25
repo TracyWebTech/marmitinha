@@ -13,7 +13,7 @@ class Meal(models.Model):
     date = models.DateField(unique=True)
     ordered = models.BooleanField(default=False)
     washer = models.ForeignKey('people.Person', null=True, blank=True)
-    ticket = models.PositiveSmallIntegerField(null=True, blank=True)
+    ticket = models.PositiveSmallIntegerField(default=0)
 
     @classmethod
     def _create_random(cls, meal):
@@ -61,22 +61,20 @@ class PersonMeal(models.Model):
         return u'{} - ({})'.format(self.person.name, self.meal.date)
 
     def save(self, *args, **kwargs):
-        if self.person.is_new and self.wash:
-            n_wash = self.person.personmeal_set.filter(wash=True)
-            n_people = Person.objects.exclude(pk=self.person.pk)
-            if n_wash.count() == n_people.count():
-                for wash in n_wash:
-                    wash.wash = False
-                    wash.save()
-                self.person.is_new = False
-                self.person.save()
-        super(PersonMeal, self).save(*args, **kwargs)
-
-    def save(self, *args, **kwargs):
         if self.wash:
             pm = self.meal.personmeal_set.filter(wash=True)
             if self.pk:
                 pm = pm.exclude(pk=self.pk)
             if pm.exists():
                 raise ValidationError('Não pode fiote')
+
+            if self.person.is_new:
+                n_wash = self.person.personmeal_set.filter(wash=True)
+                n_people = Person.objects.exclude(pk=self.person.pk)
+                if n_wash.count() >= n_people.count():
+                    for wash in n_wash:
+                        wash.wash = False
+                        wash.save()
+                    self.person.is_new = False
+                    self.person.save()
         super(PersonMeal, self).save(*args, **kwargs)

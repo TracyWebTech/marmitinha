@@ -7,28 +7,10 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.views.generic import View
+from django.utils import timezone
 
 from meals.models import Meal, PersonMeal
 from people.models import Person
-
-
-def create_person_meal_with_wash(meal, person, pm=None, has_pm=False):
-    try:
-        pw = PersonMeal.objects.get(meal=meal, wash=True)
-    except PersonMeal.DoesNotExist:
-        if has_pm and pm:
-            pm.wash = True
-            pm.save()
-            return pm
-        return PersonMeal.objects.create(meal=meal, person=person, wash=True)
-    else:
-        pw.wash = False
-        pw.save()
-    if has_pm and pm:
-        pm.wash = True
-        pm.save()
-        return pm
-    return PersonMeal.objects.create(meal=meal, person=person, wash=True)
 
 
 class CheckPersonView(View):
@@ -50,61 +32,54 @@ class CheckPersonView(View):
             # meal = Meal.objects.get(date=date)
             # PersonMeal.objects.create(person=person, meal=meal)
             # mesmo processo do 'wash'
-            try:
-                pm = PersonMeal.objects.get(meal=meal, person=person)
-            except PersonMeal.DoesNotExist:
-                pm = PersonMeal.objects.create(meal=meal, person=person)
-            try:
-                pmn = pm.meal.get_lowest_avg().name
-            except AttributeError:
-                pmn = None 
-            return HttpResponse(
-                json.dumps({
-                    'wash': False,
-                    'pk': pm.person.pk,
-                    'person_data': u'{} {}'.format(
-                        pm.person.name,
-                        pm.person.get_average(),
-                    ),
-                    'washer': pmn,
-                }),
-                content_type='application/json'
+            person_meal, created = PersonMeal.objects.get_or_create(
+                meal=meal,
+                person=person,
+                defaults={
+                    'wash': False
+                }
             )
 
         elif type_of == 'wash':
-            try:
-                pw = PersonMeal.objects.get(meal=meal, person=person)
-            except PersonMeal.DoesNotExist:
-                pw = create_person_meal_with_wash(meal, person)
-            else:
-                create_person_meal_with_wash(meal, person, pw, has_pm=True)
-            try:                                                                    
-                pwn = pw.meal.get_lowest_avg().name                                
-            except AttributeError:                                                  
-                pwn = None
-            return HttpResponse(
-                json.dumps({
-                    'wash': True,
-                    'pk': pw.person.pk,
-                    'person_data': u'{} {}'.format(
-                        pw.person.name,
-                        pw.person.get_average(),
-                    ),
-                    'washer': pwn,
-                }),
-                content_type='application/json'
+            PersonMeal.objects.filter(meal=meal, wash=True).update(wash=False)
+            person_meal, created = PersonMeal.objects.get_or_create(
+                meal=meal,
+                person=person,
+                defaults={
+                    'wash': True
+                }
             )
-            # faça o processo de verificar se o personmeal desse pessoa já existe
-            # se existe, setar o atributo wash como True e salvar
-            # caso não exista, criar o personmeal da pessoa e setar o wash como true
-            # retornar isso para o template
-
-            # se o clique foi realizado no campo 'wash', verificar qual é a data
-            # e verificar se a pessoa lavou naquele dia, caso tenha lavado,
-            # mudar o status dela para 'não lavou', e vice-versa
+            if not created:
+                person_meal.wash = True
+                person_meal.save()
         else:
             return HttpResponseBadRequest()
 
+        meal_today = get_object_or_404(Meal, date=timezone.now().date())
+        try:
+            washer = meal_today.get_lowest_avg().name
+        except AttributeError:
+            washer = None
+        return HttpResponse(
+            json.dumps({
+                'wash': True,
+                'pk': person_meal.person.pk,
+                'person_data': u'{} {}'.format(
+                    person_meal.person.name,
+                    person_meal.person.get_average(),
+                ),
+                'washer': washer,
+            }),
+            content_type='application/json'
+        )
+        # faça o processo de verificar se o personmeal desse pessoa já existe
+        # se existe, setar o atributo wash como True e salvar
+        # caso não exista, criar o personmeal da pessoa e setar o wash como true
+        # retornar isso para o template
+
+        # se o clique foi realizado no campo 'wash', verificar qual é a data
+        # e verificar se a pessoa lavou naquele dia, caso tenha lavado,
+        # mudar o status dela para 'não lavou', e vice-versa
 
 class UncheckPersonView(View):
     def post(self, request, *args, **kwargs):
@@ -129,10 +104,10 @@ class UncheckPersonView(View):
             pm.save()
         else:
             raise HttpResponseBadRequest()
-        try:                                                                
-            pmn = pm.meal.get_lowest_avg().name                            
-        except AttributeError:                                              
-                pmn = None 
+        try:
+            pmn = pm.meal.get_lowest_avg().name
+        except AttributeError:
+                pmn = None
         return HttpResponse(
             json.dumps({
                 'washer': pmn,
@@ -145,7 +120,6 @@ class UncheckPersonView(View):
 class ChangeDateView(View):
     def post(self, request, *args, **kwargs):
         date = request.POST.get('date', None)
-
         if not date:
             return HttpResponseBadRequest()
 
@@ -155,4 +129,17 @@ class ChangeDateView(View):
         except Meal.DoesNotExist:
             meal = Meal.objects.create(date=date)
         data = list(meal.personmeal_set.values_list('person__pk', 'wash'))
-        return HttpResponse(json.dumps(data), content_type='application/json')
+        data2 = {'tickets': meal.ticket, 'list': data}
+        print data2
+        print '***************************************************************'
+        return HttpResponse(json.dumps(data2), content_type='application/json')
+
+
+class ChangeTicketView(View):
+    def post(self, request, *args, **kwargs):
+        date = request.POST.get('date', None)
+        date = datetime.datetime.strptime(date, '%d/%m/%Y')
+        meal = Meal.objects.get(date=date)
+        meal.ticket = request.POST.get('ticket_num', None)
+        meal.save()
+        return HttpResponse()
