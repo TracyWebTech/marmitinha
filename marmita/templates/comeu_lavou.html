@@ -1,0 +1,48 @@
+<h2 class="text-center">Área do admin</h2>
+<input value="{{ today }}" type="text" id="datepicker" placeholder="Data" class="form-control" rel="{% url 'meals:change' %}" />
+
+{% if people %}
+  <div class="panel panel-default">
+    <table class="table people_manager">
+      <thead>
+        <th>Nome</th>
+        <th>Comeu</th>
+        <th>Lavou</th>
+      </thead>
+      <tbody>
+        {% for person in people %}
+          <tr>
+            <td class="person" rel="{{ person.pk }}">{{ person.name }}</td>
+            <td class="eat">
+              <div class="{% if person.pk in pqc %}check_icon{% else %}uncheck_icon{% endif %}" rel="eat"></div>
+            </td>
+            <td class="wash">
+              <div class="{% if person == who_wash %}check_icon{% else %}uncheck_icon{% endif %}" rel="wash"></div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p style="margin-left:1em;" id="updown">
+    <label for="spinner"> Tickets: </label>
+    <span class="ui-spinner ui-widget ui-widget-content ui-corner-all">
+      <input id="spinner" class="ui-spinner-input" value="{{ tickets }}" />
+      <a class="ui-spinner-button ui-spinner-up ui-corner-tr ui-button ui-widget ui-state-default ui-button-text-only" tabindex="-1" role="button" aria-disabled="false">
+        <span class="ui-button-text" rel="{% url 'meals:change_ticket' %}">
+          <span class="ui-icon ui-icon-triangle-1-n" rel="up">▲</span>
+        </span>
+      </a>
+      <a class="ui-spinner-button ui-spinner-down ui-corner-br ui-button ui-widget ui-state-default ui-button-text-only" tabindex="-1" role="button" aria-disabled="false">
+        <span class="ui-button-text" rel="{% url 'meals:change_ticket' %}">
+          <span class="ui-icon ui-icon-triangle-1-s" rel="down">▼</span>
+        </span>
+       </a>
+    </span>
+  </p>
+{% else %}
+   <div class="no_people" style="padding: 5px;">Não há pessoas no sistema, adicione-as para visualizar a tabela</div></div>
+{% endif %}
+
+</div>

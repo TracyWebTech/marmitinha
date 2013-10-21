@@ -1,0 +1,22 @@
+<h2 class="text-center">Ranking</h2>
+<div class="list-group">
+  <a href="javascript:void(0);" class="active list-group-item">Ranking</a>
+
+  {% for person in ranking %}
+    <a href="javascript:void(0);" class="list-group-item{% if person.is_new %} im_new{% endif %} person_ranking" rel="{{ person.pk }}">{{ person.name }} {{ person.get_average }} | {{ person.weight }}</a>
+
+    {% empty %}
+      <a href="javascript:void(0);" class="list-group-item empty_ranking">Adicione pessoas para que a geração do ranking</a>
+
+  {% endfor %}
+</div>
+
+{% if user.is_authenticated %}
+  <div class="form-group">
+    <input type="text" class="form-control" id="add_person" placeholder="Adicionar pessoa" />
+    <button class="btn btn-success pull-right" id="btn_add_person" rel="{% url 'people:add' %}">Adicionar</button>
+    <div class="status"></div>
+  </div>
+{% endif %}
+
+<p><a class="btn btn-default" href="javascript:void(0);">Entenda o Ranking &raquo;</a></p>
