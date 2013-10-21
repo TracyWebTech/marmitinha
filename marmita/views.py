@@ -19,21 +19,22 @@ def index(request):
         who_wash = people_meal_filter.get(wash=True).person
     except PersonMeal.DoesNotExist:
         who_wash = None
-    pqc = [pm.person.pk for pm in people_meal_filter]
+    people_who_ate = [person.person.pk for person in people_meal_filter]
     try:
-        m = Meal.objects.get(date=today)
+        meal = Meal.objects.get(date=today)
     except Meal.DoesNotExist:
-        m = Meal.objects.create(date=today)
-    
-    ranking = list(Person.objects.all())
-    ranking.sort(key=lambda x: x.get_average(), reverse=True)
+        meal = Meal.objects.create(date=today)
+
+    ranking = Person.ranking()
+    people = Person.objects.all()
 
     return render(request, 'index.html', {
-        'people': ranking,
-        'min': m.get_lowest_avg(),
+        'people': people,
+        'ranking': reversed(ranking),
+        'min': meal.get_lowest_avg(),
         'form': AuthenticationForm,
         'today': today.strftime("%d/%m/%Y"),
-        'pqc': pqc,
+        'pqc': people_who_ate,
         'who_wash': who_wash,
-        'tickets': m.ticket,
+        'tickets': meal.ticket,
     })

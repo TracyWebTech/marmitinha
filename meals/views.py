@@ -13,8 +13,9 @@ from meals.models import Meal, PersonMeal
 from people.models import Person
 
 
-class CheckPersonView(View):
+class CheckUncheckPersonView(View):
     def post(self, request, *args, **kwargs):
+        check_uncheck = request.POST.get('check_uncheck', None)
         person_pk = request.POST.get('person_pk', None)
         date = request.POST.get('date', None)
         type_of = request.POST.get('type_of', None)
@@ -26,96 +27,77 @@ class CheckPersonView(View):
         date = datetime.datetime.strptime(date, '%d/%m/%Y')
         meal = get_object_or_404(Meal, date=date)
 
-        if type_of == 'eat':
-            # faça o processo para criação de um personmeal normal
-            # person = get_object_or_404(Person, pk=person_pk)
-            # meal = Meal.objects.get(date=date)
-            # PersonMeal.objects.create(person=person, meal=meal)
-            # mesmo processo do 'wash'
-            person_meal, created = PersonMeal.objects.get_or_create(
-                meal=meal,
-                person=person,
-                defaults={
-                    'wash': False
-                }
-            )
+        if check_uncheck == 'uncheck_icon':
+            if type_of == 'eat':
+                person_meal, created = PersonMeal.objects.get_or_create(
+                    meal=meal,
+                    person=person,
+                    defaults={
+                        'wash': False
+                    }
+                )
+                wash = False
 
-        elif type_of == 'wash':
-            PersonMeal.objects.filter(meal=meal, wash=True).update(wash=False)
-            person_meal, created = PersonMeal.objects.get_or_create(
-                meal=meal,
-                person=person,
-                defaults={
-                    'wash': True
-                }
-            )
-            if not created:
-                person_meal.wash = True
+            elif type_of == 'wash':
+                person_meal, created = PersonMeal.objects.get_or_create(
+                    meal=meal,
+                    person=person,
+                    defaults={
+                        'wash': True
+                    }
+                )
+
+                if not created:
+                    person_meal.wash = True
+                    person_meal.save()
+
+                wash = True
+
+            else:
+                return HttpResponseBadRequest()
+
+        elif check_uncheck == 'check_icon':
+            person_meal = PersonMeal.objects.get(meal=meal, person=person)
+            if type_of == 'eat':
+                wash = False
+                person_meal.delete()
+            elif type_of == 'wash':
+                wash = True
+                person_meal.wash = False
                 person_meal.save()
+            else:
+                raise HttpResponseBadRequest()
+
         else:
             return HttpResponseBadRequest()
+
+        # The personal_data is used to rebuild the ranking with the changes
+        # made changing the number of times people eat and washing the dishes
+        personal_data = []
+        ranking = [instance for instance in Person.ranking()]
+        number_of_people = Person.objects.all().count()
+        for person in ranking:
+            personal_data.append([person.name, person.get_average(), person.weight, person.is_new, person.pk])
 
         meal_today = get_object_or_404(Meal, date=timezone.now().date())
         try:
             washer = meal_today.get_lowest_avg().name
         except AttributeError:
             washer = None
+
+        number_of_meals = PersonMeal.objects.filter(meal=meal).count()
+
         return HttpResponse(
             json.dumps({
-                'wash': True,
+                'wash': wash,
                 'pk': person_meal.person.pk,
-                'person_data': u'{} {}'.format(
-                    person_meal.person.name,
-                    person_meal.person.get_average(),
-                ),
+                'person_data': list(reversed(personal_data)),
                 'washer': washer,
+                'number_of_people': number_of_people,
+                'number_of_meals': number_of_meals,
             }),
             content_type='application/json'
         )
-        # faça o processo de verificar se o personmeal desse pessoa já existe
-        # se existe, setar o atributo wash como True e salvar
-        # caso não exista, criar o personmeal da pessoa e setar o wash como true
-        # retornar isso para o template
-
-        # se o clique foi realizado no campo 'wash', verificar qual é a data
-        # e verificar se a pessoa lavou naquele dia, caso tenha lavado,
-        # mudar o status dela para 'não lavou', e vice-versa
-
-class UncheckPersonView(View):
-    def post(self, request, *args, **kwargs):
-        person_pk = request.POST.get('person_pk', None)
-        date = request.POST.get('date', None)
-        type_of = request.POST.get('type_of', None)
-        if not type_of or not date or not person_pk:
-            raise HttpResponseBadRequest()
-
-        person = get_object_or_404(Person, pk=person_pk)
-
-        date = datetime.datetime.strptime(date, '%d/%m/%Y')
-        meal = get_object_or_404(Meal, date=date)
-
-        pm = PersonMeal.objects.get(meal=meal, person=person)
-        if type_of == 'eat':
-            wash = False
-            pm.delete()
-        elif type_of == 'wash':
-            wash = True
-            pm.wash = False
-            pm.save()
-        else:
-            raise HttpResponseBadRequest()
-        try:
-            pmn = pm.meal.get_lowest_avg().name
-        except AttributeError:
-                pmn = None
-        return HttpResponse(
-            json.dumps({
-                'washer': pmn,
-                'wash': wash
-            }),
-            content_type='application/json'
-        )
-
 
 class ChangeDateView(View):
     def post(self, request, *args, **kwargs):

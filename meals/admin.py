@@ -1,6 +1,6 @@
-from django.contrib import admin                                                
-from meals.models import PersonMeal, Meal                                                
-                                                                                
+from django.contrib import admin
+from meals.models import PersonMeal, Meal
+
 class PersonMealInline(admin.TabularInline):
     model = PersonMeal
 
@@ -8,4 +8,4 @@ class PersonMealInline(admin.TabularInline):
 class MealAdmin(admin.ModelAdmin):
     inlines = [PersonMealInline]
 
-admin.site.register(Meal, MealAdmin)  
+admin.site.register(Meal, MealAdmin)

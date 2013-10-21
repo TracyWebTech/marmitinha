@@ -28,23 +28,21 @@ class Meal(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(Meal, self).__init__(*args, **kwargs)
-        Meal._create_random(self)
+        if self.date == datetime.date.today():
+            Meal._create_random(self)
 
     def get_lowest_avg(self):
-        try:
-            people = [p.person for p in self.personmeal_set.all()
-                      .order_by('-person__weight')]
-            new = [p.person for p in self.personmeal_set.filter(
-                   person__is_new=True).order_by('-person__weight')]
-        except PersonMeal.DoesNotExist:
-            people = list(Person.objects.all().order_by('-weight'))
-            new = list(Person.objects.filter(is_new=True).order_by('-weight'))
-        people.sort(key=lambda x: x.get_average(), reverse=True)
-        new.sort(key=lambda x: x.get_average(), reverse=True)
-        try:
-            return new[-1] if new else people[-1]
-        except IndexError:
-            return None
+        ranking = Person.ranking()
+        wash = None
+        for person in ranking:
+            if person.personmeal_set.filter(meal=self).exists():
+                if person.is_new:
+                    return person
+                elif person.get_average() != unicode(0.0):
+                    return person
+                if not wash:
+                    wash = person
+        return wash
 
     def __unicode__(self):
         return unicode(self.date)
@@ -62,11 +60,7 @@ class PersonMeal(models.Model):
 
     def save(self, *args, **kwargs):
         if self.wash:
-            pm = self.meal.personmeal_set.filter(wash=True)
-            if self.pk:
-                pm = pm.exclude(pk=self.pk)
-            if pm.exists():
-                raise ValidationError('Não pode fiote')
+            PersonMeal.objects.filter(meal=self.meal, wash=True).update(wash=False)
 
             if self.person.is_new:
                 n_wash = self.person.personmeal_set.filter(wash=True)

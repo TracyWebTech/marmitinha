@@ -4,7 +4,13 @@ class Person(models.Model):
     name = models.CharField(max_length=70)
     is_new = models.BooleanField(default=True)
     weight = models.PositiveSmallIntegerField(blank=True, null=True)
-        
+
+    @classmethod
+    def ranking(cls):
+        people = list(Person.objects.all().order_by('weight'))
+        people.sort(key=lambda x: x.get_average())
+        return people
+
     def count_wash(self):
         #countwash = PersonMeal.objects.filter(wash=True, person=self).count()
         #nesse caso seria preciso importar PersonMeal

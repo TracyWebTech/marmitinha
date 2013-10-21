@@ -1,3 +1,23 @@
-{% extends 'base/base.html' %}
+{% extends 'base.html' %}
 
 <h1>Marmitinha Conectar</h1>
+
+{% block content %}
+<div class="row">
+
+  <div class="col-lg-4">
+    {% include "ranking.html" %}
+  </div>
+
+  <div class="col-lg-4 lavar">
+    {% include "lavar.html" %}
+  </div>
+
+  <div class="col-lg-4">
+    {% if user.is_authenticated %}
+      {% include "comeu_lavou.html" %}
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
