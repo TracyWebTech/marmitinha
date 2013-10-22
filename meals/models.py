@@ -39,6 +39,7 @@ class Meal(models.Model):
                 if person.is_new:
                     return person
                 elif person.get_average() != unicode(0.0):
+                    if wash: return wash
                     return person
                 if not wash:
                     wash = person
