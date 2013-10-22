@@ -24,7 +24,6 @@ $(function () {
   $('.people_manager').on('click', '.uncheck_icon, .check_icon', function() {
     var $el = $(this);
     var class_ = $el.attr('class');
-    var is_new = "";
     var request = $.ajax({
       url: 'meals/check_uncheck/',
       type: 'POST',
@@ -56,9 +55,23 @@ $(function () {
 
       $('.list-group').append("<a href='javascript:void(0);' class='active list-group-item'>Ranking</a>");
       for (var i = 0; i < data['number_of_people']; i++) {
-        if (data['person_data'][i][3] == true) { is_new = "im_new"; }
-        else { is_new = "";}
-        $('.list-group').append('<a href="javascript:void(0);" class="list-group-item person_ranking '+is_new+'" rel="'+data['person_data'][i][4]+'">'+data['person_data'][i][0]+' '+data['person_data'][i][1]+' | '+data['person_data'][i][2]+'</a>');
+        $a = $('<a>');
+        $a.attr('href', 'javascript:void(0);');
+        $a.attr('class', 'list-group-item person_ranking');
+        // person data [3] comes with the result of a person if he is new or not
+        if (data['person_data'][i][3] == true) {
+          $a.addClass('im_new');
+        }
+        // person data [4] is the pk of the person at Data Base
+        $a.attr('rel', data['person_data'][i][4]);
+        /*
+        person data [0] is the name of the person
+        person data [1] is the media between the number of times the person
+          washed the dishes compared to the times he ate
+        person data [2] is the number to be used in case of tie ate [1]
+        */
+        $a.text(data['person_data'][i][0]+' '+data['person_data'][i][1]+' | '+data['person_data'][i][2])
+        $('.list-group').append($a);
       }
 
       $('.button-wrapper').remove();
