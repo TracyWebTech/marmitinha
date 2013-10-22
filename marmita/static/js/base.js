@@ -130,37 +130,25 @@ $(function () {
   });
 
 
-  $('#updown').on('click', '.ui-icon-triangle-1-n', function () {
+  $('#updown').on('click', '.ui-icon-triangle-1-n, .ui-icon-triangle-1-s', function () {
     var $el = $(this);
-    var abcde = parseInt($('#spinner').val()) + 1;
+    var class_ = $el.attr('class')
+    if (class_ =='ui-icon ui-icon-triangle-1-n'){
+      var number_tickets = parseInt($('#spinner').val()) + 1;
+    } else if (class_ =='ui-icon ui-icon-triangle-1-s'){
+      var number_tickets = parseInt($('#spinner').val()) - 1;
+    }
     var request = $.ajax({
       url: $(this).parent().attr('rel'),
       type: 'POST',
       data: {
         'date': $('#datepicker').val(),
-        'ticket_num': abcde,
+        'ticket_num': number_tickets,
       },
     });
     request.done(function( data ) {
-      $('#spinner').empty().val(abcde);
+      $('#spinner').empty().val(number_tickets);
     });
   });
-  $('#updown').on('click', '.ui-icon-triangle-1-s', function () {
-    var $el = $(this);
-    var abcde = parseInt($('#spinner').val()) - 1;
-    var request = $.ajax({
-      url: $(this).parent().attr('rel'),
-      type: 'POST',
-      data: {
-        'date': $('#datepicker').val(),
-        'ticket_num': abcde,
-      },
-    });
-    request.done(function( data ) {
-      $('#spinner').empty().val(abcde);
-
-    });
-  });
-
 
 });
